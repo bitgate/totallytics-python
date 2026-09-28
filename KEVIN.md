@@ -1,5 +1,7 @@
 # KEVIN.md
 
+Status: v0.1.0 tagged at ac8b59b, CI green 3.9-3.14 (114 tests per leg), not on PyPI until the trusted publisher is added.
+
 Python port of `bitgate/totallytics-js` (the reference; its `WIRE.md` is the wire contract). Server: private `bitgate/totallytics`, `src/api-analytics/ingest.ts` (`normalizeBatch`). Never push to either from here.
 
 ## Layout
@@ -24,7 +26,8 @@ Python port of `bitgate/totallytics-js` (the reference; its `WIRE.md` is the wir
 
 ## Release
 - Bump `src/totallytics/_version.py`, push tag `vX.Y.Z` -> `release.yml` builds + publishes via PyPI Trusted Publishing (environment `pypi`).
-- PyPI publisher must exist (owner `bitgate`, repo `totallytics-python`, workflow `release.yml`, env `pypi`). v0.1.0 tag was pushed before it existed, so its publish job failed; re-run that job once the publisher is added.
+- PyPI trusted publisher must exist (owner `bitgate`, repo `totallytics-python`, workflow `release.yml`, env `pypi`).
+- v0.1.0 Release run 36373965701 failed at publish with `invalid-publisher` (expected, no publisher yet). Once it exists: "Re-run all jobs" on that run. GitHub env `pypi` was auto-created, no protection rules.
 
 ## Access
 - Classic PAT is rejected by the bitgate org; use the fine-grained PAT (also for `PATCH /repos` visibility).
