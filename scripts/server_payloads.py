@@ -1,6 +1,6 @@
 """Prints the exact request bodies the SDK sends for the conformance scenarios plus real FastAPI and Flask traffic.
 
-Usage: python scripts/server_payloads.py > payloads.json
+Usage: PYTHONPATH=. python scripts/server_payloads.py > payloads.json
 Then:  npx tsx scripts/validate_server.mts <totallytics server checkout> payloads.json
 """
 
@@ -10,15 +10,11 @@ import json
 import sys
 import time
 import warnings
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-warnings.simplefilter("ignore")
 
 import totallytics
-from totallytics import Totallytics, _transport
 from tests.conftest import KEY
 from tests.test_conformance import FIXTURE, RESPONDERS, arguments
+from totallytics import Totallytics, _transport
 
 FIXTURE_MINUTE_MS = 1_790_424_000_000
 bodies: list[str] = []
@@ -79,6 +75,7 @@ def replay_frameworks() -> None:
 
 
 if __name__ == "__main__":
+    warnings.simplefilter("ignore")
     _transport.post = capture
     replay_scenarios()
     record_extremes()

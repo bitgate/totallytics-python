@@ -19,7 +19,7 @@ Python port of `bitgate/totallytics-js` (the reference; its `WIRE.md` is the wir
 
 ## Verification recipes
 - Conformance regen: `npx tsx scripts/generate_fixtures.mts <totallytics-js checkout at tag> > tests/fixtures/conformance.json` (needs `tsx` only, no npm ci in the JS repo).
-- Server check (not in CI, repo is private): clone `bitgate/totallytics`, `npm ci --ignore-scripts`, then `python scripts/server_payloads.py > /tmp/p.json && npx tsx scripts/validate_server.mts <server checkout> /tmp/p.json`. Last run 2026-09-28: 13 batches, 5198 metrics + 205 errors, 0 rejected.
+- Server check (not in CI, repo is private): clone `bitgate/totallytics`, `npm ci --ignore-scripts`, then `PYTHONPATH=. python scripts/server_payloads.py > /tmp/p.json && npx tsx scripts/validate_server.mts <server checkout> /tmp/p.json`. Last run 2026-09-28: 13 batches, 5198 metrics + 205 errors, 0 rejected.
 - Prod smoke: batch with key `tt_` + 48 zeros -> 401 `invalid or revoked API key`, no writes.
 
 ## Release
@@ -28,3 +28,5 @@ Python port of `bitgate/totallytics-js` (the reference; its `WIRE.md` is the wir
 
 ## Access
 - Classic PAT is rejected by the bitgate org; use the fine-grained PAT (also for `PATCH /repos` visibility).
+- CI 3.9 leg pinned to ubuntu-24.04 (no 3.9 build for 26.04, which `ubuntu-latest` becomes on 2026-10-19).
+- Always run `ruff check . && ruff format --check .` right before committing, scripts/ included.
