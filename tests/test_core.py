@@ -4,10 +4,10 @@ import math
 
 import pytest
 
-from totallytics import bucket
-from totallytics._aggregator import MAX_KEYS, Aggregator, Measurement
-from totallytics._histogram import _fdlibm_log
-from totallytics._util import clip, describe_error, path_of, round_ms
+from clicktag import bucket
+from clicktag._aggregator import MAX_KEYS, Aggregator, Measurement
+from clicktag._histogram import _fdlibm_log
+from clicktag._util import clip, describe_error, path_of, round_ms
 
 MINUTE_MS = 1_790_424_000_000
 

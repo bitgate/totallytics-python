@@ -13,7 +13,7 @@ from ._runtime import default_key, normalize_key, warn, warn_no_key
 from ._transport import USER_AGENT, Transport, create_batch
 from ._util import clip, describe_error, path_of
 
-DEFAULT_ENDPOINT = "https://totallytics.com/api/ingest"
+DEFAULT_ENDPOINT = "https://clicktag.io/api/ingest"
 
 MAX_SDK = 64
 MAX_PATH = 512
@@ -22,11 +22,11 @@ MAX_CONSUMER = 128
 MAX_MESSAGE = 1000
 SHUTDOWN_BUDGET_SECONDS = 5.0
 
-_clients: weakref.WeakSet[Totallytics] = weakref.WeakSet()
+_clients: weakref.WeakSet[Clicktag] = weakref.WeakSet()
 
 
-class Totallytics:
-    """Aggregates finished requests per minute and ships them to Totallytics from one background thread."""
+class Clicktag:
+    """Aggregates finished requests per minute and ships them to Clicktag from one background thread."""
 
     def __init__(
         self,
@@ -130,7 +130,7 @@ class Totallytics:
         return delivered
 
     def _start_worker(self) -> None:
-        worker = threading.Thread(target=self._work, args=(self._generation,), name="totallytics", daemon=True)
+        worker = threading.Thread(target=self._work, args=(self._generation,), name="clicktag", daemon=True)
         worker.start()
         self._worker = worker
 

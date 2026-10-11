@@ -9,7 +9,7 @@ pytest.importorskip("flask")
 
 from flask import Blueprint, Flask, Request, Response, abort
 
-from totallytics.flask import TotallyticsMiddleware
+from clicktag.flask import ClicktagMiddleware
 
 from .conftest import KEY, Ingest, errors_of, metrics_of
 
@@ -18,7 +18,7 @@ class Teapot(Exception):
     pass
 
 
-def build_app(testing: bool = False, **options: Any) -> tuple[Flask, TotallyticsMiddleware]:
+def build_app(testing: bool = False, **options: Any) -> tuple[Flask, ClicktagMiddleware]:
     app = Flask(__name__)
     app.testing = testing
     orgs = Blueprint("orgs", __name__, url_prefix="/v1/orgs/<org>")
@@ -61,7 +61,7 @@ def build_app(testing: bool = False, **options: Any) -> tuple[Flask, Totallytics
         return Response(chunks())
 
     app.register_blueprint(orgs)
-    extension = TotallyticsMiddleware(api_key=KEY, **options)
+    extension = ClicktagMiddleware(api_key=KEY, **options)
     extension.init_app(app)
     return app, extension
 
@@ -138,7 +138,7 @@ def test_callbacks_receive_the_request(ingest: Ingest) -> None:
 def test_wraps_the_app_directly(ingest: Ingest) -> None:
     app = Flask(__name__)
     app.add_url_rule("/ping", "ping", lambda: "pong")
-    extension = TotallyticsMiddleware(app, api_key=KEY)
+    extension = ClicktagMiddleware(app, api_key=KEY)
     app.test_client().get("/ping")
     extension.flush()
     assert metrics_of(ingest)[0]["route"] == "/ping"

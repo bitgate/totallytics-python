@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from totallytics import Totallytics, bucket
+from clicktag import Clicktag, bucket
 
 from .conftest import KEY, Ingest
 
@@ -51,7 +51,7 @@ def by_rows(batches: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def test_fixture_comes_from_the_js_sdk() -> None:
-    assert FIXTURE["source"].startswith("totallytics-js ")
+    assert FIXTURE["source"].startswith(("clicktag-js ", "totallytics-js "))
     assert len(FIXTURE["buckets"]) > 2000
     assert len(FIXTURE["scenarios"]) == 9
 
@@ -68,7 +68,7 @@ def test_buckets_match_js() -> None:
 @pytest.mark.parametrize("scenario", FIXTURE["scenarios"], ids=lambda scenario: scenario["name"])
 def test_payloads_match_js(scenario: dict[str, Any], ingest: Ingest) -> None:
     options = scenario["options"]
-    client = Totallytics(
+    client = Clicktag(
         KEY,
         max_batch_rows=options.get("maxBatchRows"),
         error_samples=options.get("errorSamples", True),

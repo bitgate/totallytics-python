@@ -1,7 +1,7 @@
 """Prints the exact request bodies the SDK sends for the conformance scenarios plus real FastAPI and Flask traffic.
 
 Usage: PYTHONPATH=. python scripts/server_payloads.py > payloads.json
-Then:  npx tsx scripts/validate_server.mts <totallytics server checkout> payloads.json
+Then:  npx tsx scripts/validate_server.mts <clicktag server checkout> payloads.json
 """
 
 from __future__ import annotations
@@ -11,10 +11,10 @@ import sys
 import time
 import warnings
 
-import totallytics
+import clicktag
+from clicktag import Clicktag, _transport
 from tests.conftest import KEY
 from tests.test_conformance import FIXTURE, RESPONDERS, arguments
-from totallytics import Totallytics, _transport
 
 FIXTURE_MINUTE_MS = 1_790_424_000_000
 bodies: list[str] = []
@@ -32,7 +32,7 @@ def replay_scenarios() -> None:
         if scenario["name"] in RESPONDERS:
             continue
         options = scenario["options"]
-        client = Totallytics(
+        client = Clicktag(
             KEY, max_batch_rows=options.get("maxBatchRows"), error_samples=options.get("errorSamples", True)
         )
         for entry in scenario["entries"]:
@@ -44,7 +44,7 @@ def replay_scenarios() -> None:
 
 
 def record_extremes() -> None:
-    client = Totallytics(KEY, max_batch_rows=5_000)
+    client = Clicktag(KEY, max_batch_rows=5_000)
     for index in range(5_000):
         client.record(
             method=("GET", "POST", "DELETE", "PATCH")[index % 4],
@@ -71,7 +71,7 @@ def replay_frameworks() -> None:
         for path in ("/users/1?token=x", "/files/a/b.txt", "/v1/orgs/acme/items/7", "/boom", "/nope/😀", "/stream"):
             client.get(path, headers={"User-Agent": "curl/8.4.0"})
         client.post("/users/1")
-    totallytics.flush()
+    clicktag.flush()
 
 
 if __name__ == "__main__":

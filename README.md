@@ -1,6 +1,6 @@
-# totallytics
+# clicktag
 
-Official Python SDK for [Totallytics](https://totallytics.com) API analytics. Add one middleware and see traffic, latency percentiles, error rates and top consumers per endpoint.
+Official Python SDK for [Clicktag](https://clicktag.io) API analytics. Add one middleware and see traffic, latency percentiles, error rates and top consumers per endpoint.
 
 - Works with FastAPI, Starlette, Flask and any ASGI or WSGI app
 - Zero dependencies, Python 3.9+
@@ -9,66 +9,66 @@ Official Python SDK for [Totallytics](https://totallytics.com) API analytics. Ad
 ## Install
 
 ```sh
-pip install totallytics
+pip install clicktag
 ```
 
-Create an API key in your Totallytics dashboard and set it as `TOTALLYTICS_API_KEY`.
+Create an API key in your Clicktag dashboard and set it as `CLICKTAG_API_KEY`.
 
 ## FastAPI
 
 ```python
 from fastapi import FastAPI
-from totallytics.fastapi import TotallyticsMiddleware
+from clicktag.fastapi import ClicktagMiddleware
 
 app = FastAPI()
-app.add_middleware(TotallyticsMiddleware)
+app.add_middleware(ClicktagMiddleware)
 ```
 
-Starlette works the same way with `from totallytics.starlette import TotallyticsMiddleware`.
+Starlette works the same way with `from clicktag.starlette import ClicktagMiddleware`.
 
 ## Flask
 
 ```python
 from flask import Flask
-from totallytics.flask import TotallyticsMiddleware
+from clicktag.flask import ClicktagMiddleware
 
 app = Flask(__name__)
-TotallyticsMiddleware(app)
+ClicktagMiddleware(app)
 ```
 
-With an app factory, create `totallytics = TotallyticsMiddleware()` once and call `totallytics.init_app(app)`.
+With an app factory, create `clicktag = ClicktagMiddleware()` once and call `clicktag.init_app(app)`.
 
 ## Any ASGI or WSGI app
 
 ```python
-from totallytics.asgi import TotallyticsMiddleware  # or totallytics.wsgi
+from clicktag.asgi import ClicktagMiddleware  # or clicktag.wsgi
 
-app = TotallyticsMiddleware(app)
+app = ClicktagMiddleware(app)
 ```
 
-This covers Django, Litestar, Quart, Falcon and friends. These frameworks don't expose a route template to middleware, so the raw path is sent and Totallytics groups it into routes (`/users/42` becomes `/users/:id`). Pass a `route` callback to send your own templates.
+This covers Django, Litestar, Quart, Falcon and friends. These frameworks don't expose a route template to middleware, so the raw path is sent and Clicktag groups it into routes (`/users/42` becomes `/users/:id`). Pass a `route` callback to send your own templates.
 
 ## Options
 
-Pass options as keyword arguments, e.g. `app.add_middleware(TotallyticsMiddleware, consumer=..., ignore=...)`.
+Pass options as keyword arguments, e.g. `app.add_middleware(ClicktagMiddleware, consumer=..., ignore=...)`.
 
 | Option | Default | Description |
 | --- | --- | --- |
-| `api_key` | `TOTALLYTICS_API_KEY` | API key, or a zero-argument function returning it |
+| `api_key` | `CLICKTAG_API_KEY` | API key, or a zero-argument function returning it |
 | `consumer` | none | `consumer(request)` returns who made the call (customer, tenant, API key id) |
 | `route` | framework route | `route(request)` returns a route template, `None` keeps the default |
 | `ignore` | none | `ignore(request)` returns `True` to skip a request, e.g. health checks |
-| `endpoint` | `https://totallytics.com/api/ingest` | Ingest URL |
+| `endpoint` | `https://clicktag.io/api/ingest` | Ingest URL |
 | `flush_interval` | `10.0` | Seconds between flushes |
 | `max_batch_rows` | `1000` | Rows per batch (1 to 5000). A full buffer flushes right away |
 | `error_samples` | `True` | Send up to 50 5xx and 20 4xx samples per flush |
-| `debug` | `False` | Log diagnostics through the `totallytics` logger |
+| `debug` | `False` | Log diagnostics through the `clicktag` logger |
 
 Callbacks receive a Starlette `Request` (FastAPI, Starlette), `flask.request` (Flask), the ASGI `scope` or the WSGI `environ`.
 
 ```python
 app.add_middleware(
-    TotallyticsMiddleware,
+    ClicktagMiddleware,
     consumer=lambda request: request.headers.get("x-customer-id"),
     ignore=lambda request: request.url.path == "/health",
 )
@@ -85,15 +85,15 @@ Never sent: request or response bodies, headers other than User-Agent, query str
 - **Timing.** Duration runs from the request until the response starts, so streamed bodies don't count. Unhandled exceptions are recorded as 500, and ASGI clients that disconnect before a response as 499.
 - **Workers.** Every process (gunicorn or uvicorn workers) keeps and flushes its own buffer. Forked workers start empty.
 - **Shutdown.** Buffers flush on ASGI lifespan shutdown and at interpreter exit, within 5 seconds.
-- **Serverless.** A frozen process can't flush in the background, so call `totallytics.flush()` before your handler returns. It sends everything buffered, waits for delivery and returns `False` if its `timeout` ran out.
+- **Serverless.** A frozen process can't flush in the background, so call `clicktag.flush()` before your handler returns. It sends everything buffered, waits for delivery and returns `False` if its `timeout` ran out.
 - **Delivery.** Failed batches are retried up to 3 times with backoff, using the same body and `batch_id` so the server drops duplicates. Oversized batches are split. An invalid key logs one warning per process and data is dropped.
 
 ## Custom integrations
 
 ```python
-from totallytics import Totallytics
+from clicktag import Clicktag
 
-client = Totallytics(integration="my-server")
+client = Clicktag(integration="my-server")
 client.record(method="GET", path="/users/42", route="/users/:id", status=200, duration_ms=12.5)
 ```
 
@@ -108,7 +108,7 @@ ruff check . && ruff format --check .
 `tests/fixtures/conformance.json` is generated by the JS SDK, so both SDKs produce identical batches:
 
 ```sh
-npx tsx scripts/generate_fixtures.mts ../totallytics-js > tests/fixtures/conformance.json
+npx tsx scripts/generate_fixtures.mts ../clicktag-js > tests/fixtures/conformance.json
 ```
 
 ## License

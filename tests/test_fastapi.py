@@ -12,8 +12,8 @@ from fastapi import APIRouter, FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from fastapi.testclient import TestClient
 
-import totallytics
-from totallytics.fastapi import TotallyticsMiddleware
+import clicktag
+from clicktag.fastapi import ClicktagMiddleware
 
 from .conftest import KEY, Ingest, errors_of, metrics_of
 
@@ -59,7 +59,7 @@ def build_app(**options: Any) -> FastAPI:
         return {}
 
     app.mount("/sub", sub)
-    app.add_middleware(TotallyticsMiddleware, api_key=KEY, **options)
+    app.add_middleware(ClicktagMiddleware, api_key=KEY, **options)
     return app
 
 
@@ -75,7 +75,7 @@ def test_reports_route_templates(ingest: Ingest) -> None:
     client.get("/sub/deep/x")
     client.get("/nope/123")
     client.post("/users/42")
-    totallytics.flush()
+    clicktag.flush()
 
     assert routes_of(ingest) == [
         ("GET", "/files/:file_path", 200),
@@ -92,7 +92,7 @@ def test_samples_errors_without_query_strings(ingest: Ingest) -> None:
     client = TestClient(build_app(), raise_server_exceptions=False)
     assert client.get("/boom?token=secret").status_code == 500
     assert client.get("/forbidden").status_code == 403
-    totallytics.flush()
+    clicktag.flush()
 
     assert [(row["route"], row["path"], row["status"], row.get("message")) for row in errors_of(ingest)] == [
         ("/boom", "/boom", 500, "ValueError: boom"),
@@ -103,7 +103,7 @@ def test_samples_errors_without_query_strings(ingest: Ingest) -> None:
 def test_excludes_streaming_time(ingest: Ingest) -> None:
     client = TestClient(build_app())
     assert client.get("/stream").content == b"firstsecond"
-    totallytics.flush()
+    clicktag.flush()
     assert metrics_of(ingest)[0]["duration_ms_sum"] < 250
 
 
@@ -114,7 +114,7 @@ def test_callbacks_receive_the_request(ingest: Ingest) -> None:
     client = TestClient(build_app(consumer=consumer, ignore=lambda request: request.url.path.startswith("/files")))
     client.get("/users/1", headers={"x-org": "acme"})
     client.get("/files/secret.txt")
-    totallytics.flush()
+    clicktag.flush()
 
     (metric,) = metrics_of(ingest)
     assert (metric["route"], metric["consumer"]) == ("/users/:user_id", "acme")
