@@ -11,8 +11,8 @@ from typing import Any
 
 import pytest
 
-import totallytics._transport as transport
-from totallytics import Totallytics, __version__
+import clicktag._transport as transport
+from clicktag import Clicktag, __version__
 
 from .conftest import KEY, record
 
@@ -54,7 +54,7 @@ def server(monkeypatch: pytest.MonkeyPatch) -> Iterator[Server]:
 
 
 def test_posts_json_with_bearer_auth_and_user_agent(server: Server) -> None:
-    client = Totallytics(KEY, endpoint=server.url, integration="test")
+    client = Clicktag(KEY, endpoint=server.url, integration="test")
     record(client)
     assert client.flush(5)
 
@@ -62,8 +62,8 @@ def test_posts_json_with_bearer_auth_and_user_agent(server: Server) -> None:
     assert request["path"] == "/api/ingest"
     assert request["headers"]["Authorization"] == f"Bearer {KEY}"
     assert request["headers"]["Content-Type"] == "application/json"
-    assert request["headers"]["User-Agent"] == f"totallytics-python/{__version__}"
-    assert json.loads(request["body"])["sdk"] == f"totallytics-python/{__version__} test"
+    assert request["headers"]["User-Agent"] == f"clicktag-python/{__version__}"
+    assert json.loads(request["body"])["sdk"] == f"clicktag-python/{__version__} test"
 
 
 def test_reads_error_statuses(server: Server) -> None:

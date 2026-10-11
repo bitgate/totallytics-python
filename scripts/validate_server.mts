@@ -1,5 +1,5 @@
 // Feeds SDK request bodies through the server's own normalizeBatch and fails on any rejected row.
-// Usage: npx tsx scripts/validate_server.mts <totallytics server checkout> payloads.json
+// Usage: npx tsx scripts/validate_server.mts <clicktag server checkout> payloads.json
 import fs from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'

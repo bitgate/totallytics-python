@@ -7,7 +7,7 @@ from typing import Any, Callable
 
 import pytest
 
-from totallytics.asgi import TotallyticsMiddleware
+from clicktag.asgi import ClicktagMiddleware
 
 from .conftest import KEY, Ingest, errors_of, metrics_of
 
@@ -54,7 +54,7 @@ def responding(status: int = 200, delay: float = 0.0) -> App:
 
 
 def test_records_requests_until_the_response_starts(ingest: Ingest) -> None:
-    middleware = TotallyticsMiddleware(responding(201, delay=0.3), api_key=KEY)
+    middleware = ClicktagMiddleware(responding(201, delay=0.3), api_key=KEY)
     sent = call(middleware, http_scope())
     assert [message["type"] for message in sent] == ["http.response.start", "http.response.body"]
     middleware.flush()
@@ -74,7 +74,7 @@ def test_uses_the_route_template_left_in_scope(ingest: Ingest) -> None:
         scope["route"] = route
         await responding()(scope, receive, send)
 
-    middleware = TotallyticsMiddleware(app, api_key=KEY)
+    middleware = ClicktagMiddleware(app, api_key=KEY)
     call(middleware, http_scope())
     middleware.flush()
     assert metrics_of(ingest)[0]["route"] == "/things/:thing_id"
@@ -84,7 +84,7 @@ def test_records_exceptions_as_500_and_reraises(ingest: Ingest) -> None:
     async def app(scope: dict, receive: Any, send: Any) -> None:
         raise ValueError("boom")
 
-    middleware = TotallyticsMiddleware(app, api_key=KEY)
+    middleware = ClicktagMiddleware(app, api_key=KEY)
     with pytest.raises(ValueError):
         call(middleware, http_scope())
     middleware.flush()
@@ -99,7 +99,7 @@ def test_records_499_when_the_client_leaves_before_a_response(ingest: Ingest) ->
         while (await receive())["type"] != "http.disconnect":
             pass
 
-    middleware = TotallyticsMiddleware(app, api_key=KEY)
+    middleware = ClicktagMiddleware(app, api_key=KEY)
     call(middleware, http_scope())
     middleware.flush()
     assert metrics_of(ingest)[0]["status"] == 499
@@ -109,7 +109,7 @@ def test_records_499_when_the_request_is_cancelled(ingest: Ingest) -> None:
     async def app(scope: dict, receive: Any, send: Any) -> None:
         raise asyncio.CancelledError
 
-    middleware = TotallyticsMiddleware(app, api_key=KEY)
+    middleware = ClicktagMiddleware(app, api_key=KEY)
     with pytest.raises(asyncio.CancelledError):
         call(middleware, http_scope())
     middleware.flush()
@@ -120,7 +120,7 @@ def test_callbacks_receive_the_scope(ingest: Ingest) -> None:
     def consumer(scope: dict) -> str:
         return dict(scope["headers"])[b"x-org"].decode()
 
-    middleware = TotallyticsMiddleware(
+    middleware = ClicktagMiddleware(
         responding(),
         api_key=lambda: KEY,
         consumer=consumer,
@@ -141,9 +141,9 @@ def test_failing_callbacks_never_break_requests(ingest: Ingest) -> None:
     def explode(value: object = None) -> str:
         raise RuntimeError("nope")
 
-    middleware = TotallyticsMiddleware(responding(), api_key=KEY, consumer=explode, route=explode, ignore=explode)
+    middleware = ClicktagMiddleware(responding(), api_key=KEY, consumer=explode, route=explode, ignore=explode)
     call(middleware, http_scope())
-    unkeyed = TotallyticsMiddleware(responding(), api_key=explode)
+    unkeyed = ClicktagMiddleware(responding(), api_key=explode)
     call(unkeyed, http_scope())
     middleware.flush()
     unkeyed.flush()
@@ -159,7 +159,7 @@ def test_passes_other_scopes_through(ingest: Ingest) -> None:
     async def app(scope: dict, receive: Any, send: Any) -> None:
         seen.append(scope["type"])
 
-    middleware = TotallyticsMiddleware(app, api_key=KEY)
+    middleware = ClicktagMiddleware(app, api_key=KEY)
     call(middleware, {"type": "websocket", "path": "/ws"})
     middleware.flush()
     assert seen == ["websocket"]
@@ -181,7 +181,7 @@ def test_flushes_before_lifespan_shutdown_completes(ingest: Ingest) -> None:
                 await send({"type": "lifespan.shutdown.complete"})
                 return
 
-    middleware = TotallyticsMiddleware(app, api_key=KEY)
+    middleware = ClicktagMiddleware(app, api_key=KEY)
     call(middleware, http_scope())
 
     async def run_lifespan() -> None:

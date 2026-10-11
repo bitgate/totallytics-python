@@ -6,7 +6,7 @@ from wsgiref.util import setup_testing_defaults
 
 import pytest
 
-from totallytics.wsgi import TotallyticsMiddleware
+from clicktag.wsgi import ClicktagMiddleware
 
 from .conftest import KEY, Ingest, errors_of, metrics_of
 
@@ -40,7 +40,7 @@ def hello(env: dict, start_response: Callable[..., Any]) -> list[bytes]:
 
 
 def test_records_requests(ingest: Ingest) -> None:
-    middleware = TotallyticsMiddleware(hello, api_key=KEY, consumer=lambda env: env.get("HTTP_X_ORG"))
+    middleware = ClicktagMiddleware(hello, api_key=KEY, consumer=lambda env: env.get("HTTP_X_ORG"))
     assert call(middleware, environ(HTTP_X_ORG="acme")) == (["201 Created"], b"hello")
     middleware.flush()
 
@@ -61,7 +61,7 @@ def test_returns_the_body_untouched_when_the_response_already_started() -> None:
         start_response("200 OK", [])
         return body
 
-    assert TotallyticsMiddleware(app, api_key=KEY)(environ(), lambda *args: None) is body
+    assert ClicktagMiddleware(app, api_key=KEY)(environ(), lambda *args: None) is body
 
 
 def test_records_lazy_responses_and_closes_them(ingest: Ingest) -> None:
@@ -78,7 +78,7 @@ def test_records_lazy_responses_and_closes_them(ingest: Ingest) -> None:
         def close(self) -> None:
             closed.append(True)
 
-    middleware = TotallyticsMiddleware(lambda env, start_response: Body(start_response), api_key=KEY)
+    middleware = ClicktagMiddleware(lambda env, start_response: Body(start_response), api_key=KEY)
     assert call(middleware, environ()) == (["404 Not Found"], b"missing")
     middleware.flush()
     assert closed == [True]
@@ -89,7 +89,7 @@ def test_records_exceptions_as_500_and_reraises(ingest: Ingest) -> None:
     def app(env: dict, start_response: Callable[..., Any]) -> list[bytes]:
         raise KeyError("missing")
 
-    middleware = TotallyticsMiddleware(app, api_key=KEY)
+    middleware = ClicktagMiddleware(app, api_key=KEY)
     with pytest.raises(KeyError):
         call(middleware, environ())
     middleware.flush()
@@ -99,7 +99,7 @@ def test_records_exceptions_as_500_and_reraises(ingest: Ingest) -> None:
 
 
 def test_includes_the_script_name_and_decodes_paths(ingest: Ingest) -> None:
-    middleware = TotallyticsMiddleware(hello, api_key=KEY)
+    middleware = ClicktagMiddleware(hello, api_key=KEY)
     call(middleware, environ("/caf\xc3\xa9", SCRIPT_NAME="/api"))
     middleware.flush()
     assert metrics_of(ingest)[0]["route"] == "/api/café"

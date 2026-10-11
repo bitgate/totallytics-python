@@ -6,13 +6,13 @@ from typing import Any
 
 from starlette.requests import Request
 
+from .asgi import ClicktagMiddleware as _ASGIMiddleware
 from .asgi import Scope
-from .asgi import TotallyticsMiddleware as _ASGIMiddleware
 
-__all__ = ["TotallyticsMiddleware"]
+__all__ = ["ClicktagMiddleware"]
 
 
-class TotallyticsMiddleware(_ASGIMiddleware):
+class ClicktagMiddleware(_ASGIMiddleware):
     integration = "starlette"
 
     def _callback_target(self, scope: Scope) -> Any:

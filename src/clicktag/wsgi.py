@@ -13,9 +13,9 @@ Environ = dict
 StartResponse = Callable[..., Any]
 WSGIApp = Callable[[Environ, StartResponse], Iterable[bytes]]
 
-EXCHANGE_KEY = "totallytics.exchange"
+EXCHANGE_KEY = "clicktag.exchange"
 
-__all__ = ["TotallyticsMiddleware"]
+__all__ = ["ClicktagMiddleware"]
 
 
 class _Exchange:
@@ -37,7 +37,7 @@ class _Exchange:
         return (time.perf_counter() - self.start) * 1000
 
 
-class TotallyticsMiddleware(Middleware):
+class ClicktagMiddleware(Middleware):
     """Records every request. Duration runs until `start_response`, so streamed bodies are excluded."""
 
     integration = "wsgi"

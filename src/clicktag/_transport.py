@@ -14,7 +14,7 @@ from ._runtime import warn, warn_once
 from ._util import describe_error
 from ._version import __version__
 
-USER_AGENT = f"totallytics-python/{__version__}"
+USER_AGENT = f"clicktag-python/{__version__}"
 
 MAX_ATTEMPTS = 3
 MAX_PENDING = 20
@@ -193,7 +193,7 @@ class Transport:
         if status == 401:
             warn_once(
                 "unauthorized",
-                "ingest rejected the API key (401), analytics are being dropped. Check TOTALLYTICS_API_KEY.",
+                "ingest rejected the API key (401), analytics are being dropped. Check CLICKTAG_API_KEY.",
             )
             return "drop"
         if status == 413:

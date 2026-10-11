@@ -55,9 +55,9 @@ jobs:
           /tmp/wheel/bin/pip install dist/*.whl
           /tmp/wheel/bin/python -c "
           import importlib.metadata as metadata
-          import totallytics, totallytics.asgi, totallytics.wsgi
-          assert not [r for r in metadata.requires('totallytics') or [] if 'extra ==' not in r], 'runtime deps found'
-          print('totallytics', totallytics.__version__)
+          import clicktag, clicktag.asgi, clicktag.wsgi
+          assert not [r for r in metadata.requires('clicktag') or [] if 'extra ==' not in r], 'runtime deps found'
+          print('clicktag', clicktag.__version__)
           "
       - uses: actions/upload-artifact@v7
         with:

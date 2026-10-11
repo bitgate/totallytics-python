@@ -1,13 +1,13 @@
 // Regenerates tests/fixtures/conformance.json from the JS SDK, the reference implementation.
-// Usage: npx tsx scripts/generate_fixtures.mts ../totallytics-js > tests/fixtures/conformance.json
+// Usage: npx tsx scripts/generate_fixtures.mts ../clicktag-js > tests/fixtures/conformance.json
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 const root = process.argv[2]
-if (!root) throw new Error('pass the path to a totallytics-js checkout')
+if (!root) throw new Error('pass the path to a clicktag-js checkout')
 
 const load = (file: string) => import(pathToFileURL(path.resolve(root, file)).href)
-const { Totallytics } = await load('src/core/client.ts')
+const { Clicktag } = await load('src/core/client.ts')
 const { bucket } = await load('src/core/histogram.ts')
 const { VERSION } = await load('src/version.ts')
 
@@ -37,7 +37,7 @@ async function scenario(name: string, options: Entry, entries: Entry[], respond:
     return new Response('{}', { status })
   }) as typeof fetch
 
-  const client = new Totallytics({ apiKey: KEY, ...options })
+  const client = new Clicktag({ apiKey: KEY, ...options })
   for (const entry of entries) client.record(entry)
   await client.flush()
   return { name, options, entries: entries.map(encodeEntry), batches }
@@ -198,4 +198,4 @@ const scenarios = [
   await scenario('413 split', {}, split, (payload) => (payload.metrics.length + payload.errors.length > 3 ? 413 : 202)),
 ]
 
-process.stdout.write(`${JSON.stringify({ source: `totallytics-js ${VERSION}`, buckets: bucketCases(), scenarios })}\n`)
+process.stdout.write(`${JSON.stringify({ source: `clicktag-js ${VERSION}`, buckets: bucketCases(), scenarios })}\n`)

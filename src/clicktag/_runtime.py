@@ -4,7 +4,7 @@ import logging
 import os
 import threading
 
-logger = logging.getLogger("totallytics")
+logger = logging.getLogger("clicktag")
 
 _warned: set[str] = set()
 _warned_lock = threading.Lock()
@@ -17,11 +17,11 @@ def normalize_key(value: object) -> str | None:
 
 
 def default_key() -> str | None:
-    return normalize_key(os.environ.get("TOTALLYTICS_API_KEY"))
+    return normalize_key(os.environ.get("CLICKTAG_API_KEY"))
 
 
 def warn(message: str) -> None:
-    logger.warning("[totallytics] %s", message)
+    logger.warning("[clicktag] %s", message)
 
 
 def warn_once(warning_id: str, message: str) -> None:
@@ -34,7 +34,7 @@ def warn_once(warning_id: str, message: str) -> None:
 
 def warn_no_key(debug: bool) -> None:
     if debug:
-        warn_once("no-key", "no API key (set TOTALLYTICS_API_KEY or pass api_key), requests are not recorded")
+        warn_once("no-key", "no API key (set CLICKTAG_API_KEY or pass api_key), requests are not recorded")
 
 
 def reset_after_fork() -> None:

@@ -7,7 +7,7 @@ from typing import Any, Callable, NamedTuple
 
 import pytest
 
-from totallytics import Totallytics, _client, _runtime, _transport
+from clicktag import Clicktag, _client, _runtime, _transport
 
 KEY = "tt_" + "ab" * 24
 
@@ -63,16 +63,16 @@ def ingest(monkeypatch: pytest.MonkeyPatch) -> Ingest:
 @pytest.fixture(autouse=True)
 def isolated(monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest, ingest: Ingest) -> None:
     monkeypatch.setattr(_transport, "backoff", lambda attempt: 0.0)
-    monkeypatch.delenv("TOTALLYTICS_API_KEY", raising=False)
+    monkeypatch.delenv("CLICKTAG_API_KEY", raising=False)
     monkeypatch.setattr(_runtime, "_warned", set())
     monkeypatch.setattr(_client, "_clients", weakref.WeakSet())
 
     # We keep the background thread out of tests unless they are about it
     if request.node.get_closest_marker("worker") is None:
-        monkeypatch.setattr(Totallytics, "_start_worker", lambda self: None)
+        monkeypatch.setattr(Clicktag, "_start_worker", lambda self: None)
 
 
-def record(client: Totallytics, **overrides: Any) -> None:
+def record(client: Clicktag, **overrides: Any) -> None:
     entry: dict[str, Any] = {
         "method": "GET",
         "path": "/users/42",

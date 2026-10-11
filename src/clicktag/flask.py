@@ -8,13 +8,13 @@ from flask import Flask, has_request_context, request
 
 from ._middleware import ApiKey, join_route, werkzeug_template
 from .wsgi import EXCHANGE_KEY, Environ
-from .wsgi import TotallyticsMiddleware as _WSGIMiddleware
+from .wsgi import ClicktagMiddleware as _WSGIMiddleware
 
-__all__ = ["TotallyticsMiddleware"]
+__all__ = ["ClicktagMiddleware"]
 
 
-class TotallyticsMiddleware(_WSGIMiddleware):
-    """`TotallyticsMiddleware(app)` or `init_app(app)`; wraps `app.wsgi_app`."""
+class ClicktagMiddleware(_WSGIMiddleware):
+    """`ClicktagMiddleware(app)` or `init_app(app)`; wraps `app.wsgi_app`."""
 
     integration = "flask"
 

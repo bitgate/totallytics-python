@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Any, Callable, Optional, Union
 
-from ._client import Totallytics
+from ._client import Clicktag
 from ._runtime import default_key, normalize_key, warn, warn_no_key
 from ._util import attempt, describe_error
 
@@ -36,7 +36,7 @@ class Middleware:
         self.consumer = consumer
         self.route = route
         self.ignore = ignore
-        self.client = Totallytics(
+        self.client = Clicktag(
             None if callable(api_key) else api_key,
             endpoint=endpoint,
             max_batch_rows=max_batch_rows,

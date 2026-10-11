@@ -17,7 +17,7 @@ jobs:
           python-version: "3.13"
       - name: Check the tag matches the package version
         run: |
-          version=$(PYTHONPATH=src python -c "from totallytics import __version__; print(__version__)")
+          version=$(PYTHONPATH=src python -c "from clicktag import __version__; print(__version__)")
           if [ "v$version" != "$GITHUB_REF_NAME" ]; then
             echo "::error::tag $GITHUB_REF_NAME does not match package version $version"
             exit 1
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/project/totallytics/
+      url: https://pypi.org/project/clicktag/
     permissions:
       id-token: write
     steps:

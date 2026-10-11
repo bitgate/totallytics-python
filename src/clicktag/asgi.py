@@ -20,7 +20,7 @@ ASGIApp = Callable[[Scope, Receive, Send], Awaitable[None]]
 CLIENT_CLOSED_REQUEST = 499
 SHUTDOWN_MESSAGES = ("lifespan.shutdown.complete", "lifespan.shutdown.failed")
 
-__all__ = ["TotallyticsMiddleware"]
+__all__ = ["ClicktagMiddleware"]
 
 
 class _Exchange:
@@ -39,7 +39,7 @@ class _Exchange:
         return (time.perf_counter() - self.start) * 1000
 
 
-class TotallyticsMiddleware(Middleware):
+class ClicktagMiddleware(Middleware):
     """Records every HTTP request. Duration runs until the response starts, so streamed bodies are excluded."""
 
     integration = "asgi"

@@ -3,9 +3,9 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "totallytics"
+name = "clicktag"
 dynamic = ["version"]
-description = "Official Python SDK for Totallytics API analytics: FastAPI, Starlette, Flask and any ASGI or WSGI app."
+description = "Official Python SDK for Clicktag API analytics: FastAPI, Starlette, Flask and any ASGI or WSGI app."
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
@@ -35,18 +35,18 @@ dependencies = []
 test = ["pytest>=8", "httpx>=0.27", "fastapi>=0.110", "flask>=2.3"]
 
 [project.urls]
-Homepage = "https://totallytics.com"
-Source = "https://github.com/bitgate/totallytics-python"
-Issues = "https://github.com/bitgate/totallytics-python/issues"
+Homepage = "https://clicktag.io"
+Source = "https://github.com/clicktag-io/clicktag-python"
+Issues = "https://github.com/clicktag-io/clicktag-python/issues"
 
 [tool.hatch.version]
-path = "src/totallytics/_version.py"
+path = "src/clicktag/_version.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/totallytics"]
+packages = ["src/clicktag"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/totallytics", "tests", "README.md", "LICENSE"]
+include = ["src/clicktag", "tests", "README.md", "LICENSE"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

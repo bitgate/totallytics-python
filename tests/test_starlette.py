@@ -12,8 +12,8 @@ from starlette.responses import PlainTextResponse
 from starlette.routing import Mount, Route
 from starlette.testclient import TestClient
 
-import totallytics
-from totallytics.starlette import TotallyticsMiddleware
+import clicktag
+from clicktag.starlette import ClicktagMiddleware
 
 from .conftest import KEY, Ingest, metrics_of
 
@@ -32,12 +32,12 @@ def test_reports_route_templates(ingest: Ingest) -> None:
             Mount("/m/{tenant}", routes=[Route("/x/{item}", ok)]),
         ]
     )
-    app.add_middleware(TotallyticsMiddleware, api_key=KEY, consumer=lambda request: request.path_params.get("tenant"))
+    app.add_middleware(ClicktagMiddleware, api_key=KEY, consumer=lambda request: request.path_params.get("tenant"))
     client = TestClient(app)
     client.get("/r/7")
     client.get("/m/acme/x/9")
     client.get("/m/acme/nope")
-    totallytics.flush()
+    clicktag.flush()
 
     expected = [
         ("/m/:tenant/:path", 404, "acme"),
